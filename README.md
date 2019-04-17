@@ -38,7 +38,12 @@
 
 ## Adding a component
 
-Example `applications`
+Example `applications` :
 
-* SVN Source Code repo : `svn://svn@svn.kde.org/home/kde/trunk/l10n-kf5/ml/messages/applications/`
-* File mask : `*.po`
+* Create a project : `kde-kf5-applications`
+* Add a new `applications` package in the [git repo](https://github.com/FOSSersVAST/kde-ml-kf5)
+* Import each files as components from the [git repo](https://github.com/FOSSersVAST/kde-ml-kf5/tree/applications) :
+  ```
+  export PROJECT="applications"
+  weblate import_project kde-kf5-$PROJECT 'https://github.com/FOSSersVAST/kde-ml-kf5.git' "$PROJECT" "locales/*/$PROJECT/**.po"
+  ```
