@@ -743,7 +743,7 @@ SERVER_EMAIL = 'noreply@example.com'
 DEFAULT_FROM_EMAIL = 'noreply@example.com'
 
 # List of URLs your site is supposed to serve
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['kde-ml.anishsheela.com', 'localhost', '127.0.0.1']
 
 # Example configuration for caching
 # CACHES = {
