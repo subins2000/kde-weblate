@@ -850,3 +850,33 @@ CELERY_TASK_ROUTES = {
     'weblate.trans.tasks.cleanup_fulltext': {'queue': 'search'},
     'weblate.memory.tasks.*': {'queue': 'memory'},
 }
+
+if 'WEBLATE_PRODUCTION' in os.environ:
+    '''
+    Production environment settings
+    '''
+    DATABASES = {
+        'default': {
+            # Use 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+            'ENGINE': 'django.db.backends.mysql',
+            # Database name or path to database file if using sqlite3.
+            'NAME': os.environ['DB_NAME'],
+            # Database user, not used with sqlite3.
+            'USER': os.environ['DB_USERNAME'],
+            # Database password, not used with sqlite3.
+            'PASSWORD': os.environ['DB_PASSWORD'],
+            # Set to empty string for localhost. Not used with sqlite3.
+            'HOST': os.environ['DB_HOST'],
+            # Set to empty string for default. Not used with sqlite3.
+            'PORT': os.environ['DB_PORT'],
+            # Customizations for databases
+            'OPTIONS': {
+                # In case of using an older MySQL server, which has MyISAM as a default storage
+                'init_command': 'SET storage_engine=InnoDB',
+                # Uncomment for MySQL older than 5.7:
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+                # Set emoji capable charset for MySQL:
+                'charset': 'utf8mb4',
+            },
+        }
+    }
