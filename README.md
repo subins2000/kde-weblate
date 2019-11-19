@@ -45,5 +45,5 @@ Example `applications` :
 * Import each files as components from the [git repo](https://github.com/FOSSersVAST/kde-ml-kf5/tree/applications) :
   ```
   export PROJECT="applications"
-  weblate import_project kde-kf5-$PROJECT 'https://github.com/FOSSersVAST/kde-ml-kf5.git' "$PROJECT" "locales/*/$PROJECT/**.po"
+  weblate import_project kde-kf5-$PROJECT 'https://github.com/FOSSersVAST/kde-ml.git' "$PROJECT" "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^-]*)\.po"
   ```
