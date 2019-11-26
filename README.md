@@ -36,6 +36,11 @@
   pipenv shell
   ln -s $(realpath settings.py) .venv/lib/python3.6/site-packages/weblate/settings.py
   ```
+* Setup Redis & Celery :
+  ```
+  sudo apt install redis-server
+  .venv/lib/python3.6/site-packages/weblate/examples/celery start
+  ```
 
 ### Importing components to Weblate
 
