@@ -60,8 +60,8 @@ export LANG_CODE='ml'
 
 for PACKAGE in $(ls $REPO_ROOT/l10n-kf5/templates); do
   echo $PACKAGE
-  cd $REPO_ROOT/l10n-kf5/templates/$PACKAGE && svn update
-  cd $REPO_ROOT/l10n-kf5/$LANG_CODE/$PACKAGE && svn update
+  cd $REPO_ROOT/l10n-kf5/templates/$PACKAGE && svn update --accept theirs-full
+  cd $REPO_ROOT/l10n-kf5/$LANG_CODE/$PACKAGE && svn update --accept theirs-full
 done
 ```
 
