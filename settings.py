@@ -736,11 +736,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # )
 
 # E-mail address that error messages come from.
-SERVER_EMAIL = 'noreply@example.com'
+SERVER_EMAIL = 'kde' + '@kde.smc.org.in'
 
 # Default email address to use for various automated correspondence from
 # the site managers. Used for registration emails.
-DEFAULT_FROM_EMAIL = 'noreply@example.com'
+DEFAULT_FROM_EMAIL = 'kde' + '@kde.smc.org.in'
 
 # List of URLs your site is supposed to serve
 ALLOWED_HOSTS = ['kde-ml.anishsheela.com', 'kde.smc.org.in', 'localhost', '127.0.0.1']
@@ -886,3 +886,9 @@ if 'WEBLATE_PRODUCTION' in os.environ:
     CELERY_TASK_ALWAYS_EAGER = False
     CELERY_BROKER_URL = 'redis://localhost:6379'
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+    try:
+        sentry_dsn_value = os.environ['SENTRY_DSN']
+        SENTRY_DSN = sentry_dsn_value
+    except e:
+        print('s')
