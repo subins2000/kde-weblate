@@ -893,10 +893,33 @@ if 'WEBLATE_PRODUCTION' in os.environ:
     except Exception:
         print('s')
 
+    CACHES = {
+        # Recommended redis + hiredis:
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://127.0.0.1:6379/0',
+            # If redis is running on same host as Weblate, you might
+            # want to use unix sockets instead:
+            # 'LOCATION': 'unix:///var/run/redis/redis.sock?db=0',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+                'PARSER_CLASS': 'redis.connection.HiredisParser',
+            }
+        },
+        'avatar': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': os.path.join(DATA_DIR, 'avatar-cache'),
+            'TIMEOUT': 3600,
+            'OPTIONS': {
+                'MAX_ENTRIES': 1000,
+            },
+        }
+    }
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'KDE Chathan <chathan' + '@kde.smc.org.in>'
+DEFAULT_FROM_EMAIL = 'KDE ചാത്തൻ Chathan <chathan' + '@kde.smc.org.in>'
