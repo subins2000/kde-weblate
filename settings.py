@@ -890,5 +890,5 @@ if 'WEBLATE_PRODUCTION' in os.environ:
     try:
         sentry_dsn_value = os.environ['SENTRY_DSN']
         SENTRY_DSN = sentry_dsn_value
-    except e:
+    except Exception:
         print('s')
