@@ -30,7 +30,7 @@ from logging.handlers import SysLogHandler
 DEBUG = True
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Subin Siby', 'subins2000' + '@gmail.com'),
 )
 
 MANAGERS = ADMINS
