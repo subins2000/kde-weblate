@@ -79,11 +79,7 @@ So basically, we're tracking these SVN repo files in `git`. The `.svn` folders a
 We're gonna localize **only** the trunk branch in KDE upstream.
 
 * The `master` branch must be kept up-to-date with KDE upstream (trunk). **No merges from other git branches should be done here**.
-* Work should be done on `weblate` branch (trunk). When `master` is synced to upstream, do 
-  ```
-  git checkout weblate
-  git merge --no-ff master
-  ```
+* Work should be done on `weblate` branch (trunk).
 
 To sync files with upstream :
 ```
@@ -108,6 +104,15 @@ Better add a [webhook in GitHub to Weblate](https://docs.weblate.org/en/latest/a
 
 Or go to Weblate admin, choose the project and do action "Update VCS repository".
 
+* When `master` is synced to upstream, do :
+  ```
+  git checkout weblate
+  git merge --squash master
+  git push origin weblate
+  ```
+
+This will trigger weblate to pull from mirror git repo if you have enabled webhook.
+
 ### Pushing to KDE Upstream
 
 First, we need to committ Weblate changes to the Mirror git repo. Then we push from the git repo to SVN.
@@ -121,8 +126,17 @@ First, we need to committ Weblate changes to the Mirror git repo. Then we push f
 * Go to each folder and commit to SVN :
   ```
   cd l10n-kf5/ml/applications
+  svn status
+  # ? means file is new
+  # You may wanna add new files too (this is the equivalent of git add --all) :
+  svn status | grep '?' | sed 's/^.* /svn add /' | bash
   svn commit -m 'Update Malayalam localizations'
   ```
+* There might be some new changes in PO files that you had to manually make to complete the previous step. If so, commit those to git :
+  ```bash
+  git commit -a -m 'Manual changes for pushing to upstream'
+  ```
+  Since these changes will now be in KDE upstream, they will reflect on `master` when you sync later.
 
 ### Merging trunk & stable
 
