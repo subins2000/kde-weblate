@@ -31,10 +31,6 @@ env = environ.Env(
     WEBLATE_PRODUCTION=(bool, False),
 )
 
-# reading .env file
-root = environ.Path(__file__) - 2
-environ.Env.read_env(root('.env'))
-
 #
 # Django settings for Weblate project.
 #
@@ -74,6 +70,10 @@ DATABASES = {
 }
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# reading .env file
+root = environ.Path(BASE_DIR)
+environ.Env.read_env(root('.env'))
 
 # Data directory
 DATA_DIR = os.path.join(os.getenv('PWD'), 'data')
@@ -934,4 +934,4 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'KDE ചാത്തൻ Chathan <chathan' + '@kde.smc.org.in>'
+DEFAULT_FROM_EMAIL = 'KDE ചാത്തൻ/Chathan <chathan' + '@kde.smc.org.in>'
