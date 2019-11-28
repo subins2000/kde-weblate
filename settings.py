@@ -71,12 +71,12 @@ DATABASES = {
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# reading .env file
-root = environ.Path(BASE_DIR)
-environ.Env.read_env(root('.env'))
-
 # Data directory
 DATA_DIR = os.path.join(os.getenv('PWD'), 'data')
+
+# reading .env file
+root = environ.Path(os.getenv('PWD'))
+environ.Env.read_env(root('.env'))
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
