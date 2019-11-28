@@ -19,10 +19,6 @@
 
 ## Setup
 
-* KDE l10n uses SVN :
-  ```
-  sudo apt install git-svn
-  ```
 * Clone repo
 * Install :
   ```
@@ -49,16 +45,47 @@
   ```
   weblate import_project kde 'https://github.com/FOSSersVAST/kde-ml.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^-]*)\.po"
   ```
+* Configure the project to have a SSH key for pushing to `git@github.com:FOSSersVAST/kde-ml.git`. Add the ssh key as a deploy key in GitHub repo.
 
 ## Mirror git repo
 
-These things should be used on the [mirror git repo](https://github.com/FOSSersVAST/kde-ml).
+These things should be used in the [mirror git repo](https://github.com/FOSSersVAST/kde-ml). The mirror gir repo has the structure :
+
+* l10n-kf5
+  * ml
+    * applications
+    * kde-workspace
+    * ...
+  * templates
+    * applications
+    * kde-workspace
+    * ...
+* README.md
+* ...
+
+Here, the folder `applications`, `kde-workspace` are all actually SVN cloned folders :
+
+```
+cd l10n-kf5/ml
+svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/ml/messages/applications applications
+cd l10n-kf5/templates
+svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/templates/messages/applications applications
+```
+
+So basically, we're tracking these SVN repo files in `git`. The `.svn` folders are ignored in `.gitignore`.
 
 ### Updating to KDE Upstream
 
-The `master` branch must be kept up-to-date with KDE upstream. **No merges from other git branches should be done here**.
+We're gonna localize **only** the trunk branch in KDE upstream.
 
-For trunk **localization branch** :
+* The `master` branch must be kept up-to-date with KDE upstream (trunk). **No merges from other git branches should be done here**.
+* Work should be done on `weblate` branch (trunk). When `master` is synced to upstream, do 
+  ```
+  git checkout weblate
+  git merge --no-ff master
+  ```
+
+To sync files with upstream :
 ```
 export REPO_ROOT=$PWD
 export LANG_CODE='ml'
@@ -73,39 +100,28 @@ done
 We're using `svn revert` to [make sure](https://stackoverflow.com/questions/840509/svn-update-is-not-updating) every file is same as upstream.
 
 Then commit,
-
 ```
 git commit -a -m "Sync with KDE Upstream"
 ```
 
-Better add a [webhook in GitHub to Weblate](https://docs.weblate.org/en/latest/admin/continuous.html#automatically-receiving-changes-from-github) so that Weblate is known of the changes automatically.
+Better add a [webhook in GitHub to Weblate](https://docs.weblate.org/en/latest/admin/continuous.html#automatically-receiving-changes-from-github) so that Weblate is known of the changes automatically. Do this with the `weblate` branch.
 
 Or go to Weblate admin, choose the project and do action "Update VCS repository".
 
-### Committing Weblate changes to Mirror git repo
+### Pushing to KDE Upstream
 
-Do these in the cloned mirror git repo folder in server (`data/vcs/?`).
+First, we need to committ Weblate changes to the Mirror git repo. Then we push from the git repo to SVN.
 
-* Go to Weblate admin webpage, select the project and do action "Commit changes".
-* Switch to `pootle` branch, merge upstream changes and sync :
+* Go to Weblate admin webpage, select the project, **Pull changes** and then do action **Commit changes**.
+* In the localization maintainer's cloned mirror git repo :
   ```
-  git checkout pootle
-  git merge --no-ff master
-  pootle fs sync l10n-kf5
-  # Maybe have to do add & fetch
-  # pootle fs add l10n-kf5
-  # pootle fs fetch l10n-kf5
-  # pootle fs sync l10n-kf5
+  git checkout weblate # Make sure branch is weblate
+  git pull
   ```
-  This will pull changes from Pootle to files
-* Update file headers :
+* Go to each folder and commit to SVN :
   ```
-  bash update-changed-pos-header.sh
-  ```
-* Commit and push :
-  ```
-  git commit -a -m "Updates $(date)"
-  git push origin pootle
+  cd l10n-kf5/ml/applications
+  svn commit -m 'Update Malayalam localizations'
   ```
 
 ### Merging trunk & stable
@@ -136,18 +152,3 @@ Work is done on trunk branch and similar localizations from it are merged to sta
       * ...
   ```
 * Run the `merge-to-stable.sh` script
-
-### Committing to KDE upstream
-
-* Get developer access to KDE SVN
-* Checkout PO files :
-  ```bash
-  svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/ml/messages
-  ```
-* Copy files from Mirror git repo to the checked out PO files
-* Add files and commit
-  ```
-  # Add all files
-  svn status | grep '?' | sed 's/^.* /svn add /' | bash
-  svn commit -m 'Update malayalam localizations'
-  ```
