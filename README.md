@@ -65,10 +65,12 @@ export LANG_CODE='ml'
 
 for PACKAGE in $(ls $REPO_ROOT/l10n-kf5/templates); do
   echo $PACKAGE
-  cd $REPO_ROOT/l10n-kf5/templates/$PACKAGE && svn update --accept theirs-full
-  cd $REPO_ROOT/l10n-kf5/$LANG_CODE/$PACKAGE && svn update --accept theirs-full
+  cd $REPO_ROOT/l10n-kf5/templates/$PACKAGE && svn revert . -R && svn update --accept theirs-full
+  cd $REPO_ROOT/l10n-kf5/$LANG_CODE/$PACKAGE && svn revert . -R && svn update --accept theirs-full
 done
 ```
+
+We're using `svn revert` to [make sure](https://stackoverflow.com/questions/840509/svn-update-is-not-updating) every file is same as upstream.
 
 Then commit,
 
