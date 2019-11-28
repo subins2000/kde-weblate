@@ -1,1 +1,1 @@
-pipenv run weblate runserver
+pipenv run uwsgi weblate.uwsgi.ini
