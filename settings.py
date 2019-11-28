@@ -23,6 +23,18 @@ import platform
 import os
 from logging.handlers import SysLogHandler
 
+import environ
+
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    WEBLATE_PRODUCTION=(bool, False),
+)
+
+# reading .env file
+root = environ.Path(__file__) - 2
+environ.Env.read_env(root('.env'))
+
 #
 # Django settings for Weblate project.
 #
@@ -171,7 +183,7 @@ STATICFILES_FINDERS = (
 
 # Make this unique, and don't share it with anybody.
 # You can generate it using examples/generate-secret-key
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY'] # noqa
+SECRET_KEY = env('DJANGO_SECRET_KEY') # noqa
 
 TEMPLATES = [
     {
@@ -851,7 +863,7 @@ CELERY_TASK_ROUTES = {
     'weblate.memory.tasks.*': {'queue': 'memory'},
 }
 
-if 'WEBLATE_PRODUCTION' in os.environ:
+if env('WEBLATE_PRODUCTION') is not False:
     '''
     Production environment settings
     '''
@@ -860,15 +872,15 @@ if 'WEBLATE_PRODUCTION' in os.environ:
             # Use 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
             'ENGINE': 'django.db.backends.mysql',
             # Database name or path to database file if using sqlite3.
-            'NAME': os.environ['DB_NAME'],
+            'NAME': env('DB_NAME'),
             # Database user, not used with sqlite3.
-            'USER': os.environ['DB_USERNAME'],
+            'USER': env('DB_USERNAME'),
             # Database password, not used with sqlite3.
-            'PASSWORD': os.environ['DB_PASSWORD'],
+            'PASSWORD': env('DB_PASSWORD'),
             # Set to empty string for localhost. Not used with sqlite3.
-            'HOST': os.environ['DB_HOST'],
+            'HOST': env('DB_HOST'),
             # Set to empty string for default. Not used with sqlite3.
-            'PORT': os.environ['DB_PORT'],
+            'PORT': env('DB_PORT'),
             # Customizations for databases
             'OPTIONS': {
                 # In case of using an older MySQL server, which has MyISAM as a default storage
@@ -888,7 +900,7 @@ if 'WEBLATE_PRODUCTION' in os.environ:
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
     try:
-        sentry_dsn_value = os.environ['SENTRY_DSN']
+        sentry_dsn_value = env('SENTRY_DSN')
         SENTRY_DSN = sentry_dsn_value
     except Exception:
         print('s')
