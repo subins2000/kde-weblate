@@ -219,8 +219,8 @@ GITHUB_USERNAME = None
 # Authentication configuration
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.email.EmailAuth',
-    # 'social_core.backends.google.GoogleOAuth2',
-    # 'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
     # 'social_core.backends.bitbucket.BitbucketOAuth',
     # 'social_core.backends.suse.OpenSUSEOpenId',
     # 'social_core.backends.ubuntu.UbuntuOpenId',
@@ -233,8 +233,8 @@ AUTHENTICATION_BACKENDS = (
 AUTH_USER_MODEL = 'weblate_auth.User'
 
 # Social auth backends setup
-SOCIAL_AUTH_GITHUB_KEY = ''
-SOCIAL_AUTH_GITHUB_SECRET = ''
+SOCIAL_AUTH_GITHUB_KEY = env('SOCIAL_AUTH_GITHUB_KEY')
+SOCIAL_AUTH_GITHUB_SECRET = env('SOCIAL_AUTH_GITHUB_SECRET')
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 SOCIAL_AUTH_BITBUCKET_KEY = ''
@@ -247,8 +247,8 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'public_profile']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id,name,email'}
 SOCIAL_AUTH_FACEBOOK_API_VERSION = '3.1'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
 # Social auth settings
 SOCIAL_AUTH_PIPELINE = (
@@ -755,7 +755,7 @@ SERVER_EMAIL = 'chathan' + '@kde.smc.org.in'
 DEFAULT_FROM_EMAIL = 'chathan' + '@kde.smc.org.in'
 
 # List of URLs your site is supposed to serve
-ALLOWED_HOSTS = ['kde-ml.anishsheela.com', 'kde.smc.org.in', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['51.15.143.73', 'kde.smc.org.in', 'localhost', '127.0.0.1']
 
 # Example configuration for caching
 # CACHES = {

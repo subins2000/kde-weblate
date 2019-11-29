@@ -47,6 +47,15 @@
   ```
 * Configure the project to have a SSH key for pushing to `git@github.com:FOSSersVAST/kde-ml.git`. Add the ssh key as a deploy key in GitHub repo.
 
+### Social Auth
+
+* [Follow this](https://docs.weblate.org/en/latest/admin/auth.html)
+* Get API key & Secret, store in `.env` :
+  ```
+  SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=''
+  SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=''
+  ```
+
 ## Mirror git repo
 
 These things should be used in the [mirror git repo](https://github.com/FOSSersVAST/kde-ml). The mirror gir repo has the structure :
