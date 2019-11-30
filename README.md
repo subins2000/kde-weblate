@@ -100,6 +100,7 @@ for PACKAGE in $(ls $REPO_ROOT/l10n-kf5/templates); do
   cd $REPO_ROOT/l10n-kf5/templates/$PACKAGE && svn revert . -R && svn update --accept theirs-full
   cd $REPO_ROOT/l10n-kf5/$LANG_CODE/$PACKAGE && svn revert . -R && svn update --accept theirs-full
 done
+cd $REPO_ROOT
 ```
 
 We're using `svn revert` to [make sure](https://stackoverflow.com/questions/840509/svn-update-is-not-updating) every file is same as upstream.
@@ -126,7 +127,7 @@ This will trigger weblate to pull from mirror git repo if you have enabled webho
 
 First, we need to committ Weblate changes to the Mirror git repo. Then we push from the git repo to SVN.
 
-* Go to Weblate admin webpage, select the project, **Pull changes** and then do action **Commit changes**.
+* Go to Weblate admin webpage, select the project, **Pull changes**, then do action **Commit changes** and finally do a **Rebase**.
 * In the localization maintainer's cloned mirror git repo :
   ```
   git checkout weblate # Make sure branch is weblate
@@ -146,6 +147,7 @@ First, we need to committ Weblate changes to the Mirror git repo. Then we push f
   git commit -a -m 'Manual changes for pushing to upstream'
   ```
   Since these changes will now be in KDE upstream, they will reflect on `master` when you sync later.
+* Do this process once in a week. (scripy runs on friday. So, better do it before).
 
 ### Merging trunk & stable
 
