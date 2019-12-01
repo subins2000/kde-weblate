@@ -37,6 +37,12 @@
   sudo apt install redis-server
   .venv/lib/python3.6/site-packages/weblate/examples/celery start
   ```
+* You need to update Weblate's plural form to accomodate with scripty's choice because scripty will change it to `(n != 1)` back everytime and that's a waste of git & svn tracking space. [Relevant](https://github.com/WeblateOrg/weblate/commit/56ee242b2c73aa1b892693c44d05c715b51832dd#diff-f45fc79cca287d720000daa62524df92)
+  ```
+  mysql -u root -p
+  USE dbname;
+  UPDATE lang_plural SET equation='(n != 1)' WHERE equation='n != 1'
+  ```
 
 ### Importing components to Weblate
 
@@ -76,9 +82,9 @@ Here, the folder `applications`, `kde-workspace` are all actually SVN cloned fol
 
 ```
 cd l10n-kf5/ml
-svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/ml/messages/applications applications
+svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/ml/messages/applications applications
 cd l10n-kf5/templates
-svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/templates/messages/applications applications
+svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/templates/messages/applications applications
 ```
 
 So basically, we're tracking these SVN repo files in `git`. The `.svn` folders are ignored in `.gitignore`.
@@ -117,7 +123,7 @@ Or go to Weblate admin, choose the project and do action "Update VCS repository"
 * When `master` is synced to upstream, do :
   ```
   git checkout weblate
-  git merge --squash master
+  git merge --no-ff master # Sometimes you may need to git merge -X theirs master
   git push origin weblate
   ```
 
