@@ -363,38 +363,39 @@ ROOT_URLCONF = 'weblate.urls'
 
 # Django and Weblate apps
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.admin.apps.SimpleAdminConfig',
-    'django.contrib.admindocs',
-    'django.contrib.sitemaps',
-    'social_django',
-    'crispy_forms',
-    'compressor',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'weblate.addons',
-    'weblate.auth',
-    'weblate.checks',
-    'weblate.formats',
-    'weblate.machinery',
-    'weblate.trans',
-    'weblate.lang',
-    'weblate.langdata',
-    'weblate.memory',
-    'weblate.screenshots',
-    'weblate.accounts',
-    'weblate.utils',
-    'weblate.vcs',
-    'weblate.wladmin',
-    'weblate',
-
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.sites",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.admin.apps.SimpleAdminConfig",
+    "django.contrib.admindocs",
+    "django.contrib.sitemaps",
+    "django.contrib.humanize",
+    "social_django",
+    "crispy_forms",
+    "compressor",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "weblate.addons",
+    "weblate.auth",
+    "weblate.checks",
+    "weblate.formats",
+    "weblate.machinery",
+    "weblate.trans",
+    "weblate.lang",
+    "weblate.langdata",
+    "weblate.memory",
+    "weblate.screenshots",
+    "weblate.fonts",
+    "weblate.accounts",
+    "weblate.utils",
+    "weblate.vcs",
+    "weblate.wladmin",
+    "weblate",
     # Optional: Git exporter
-    # 'weblate.gitexport',
+    "weblate.gitexport",
 )
 
 # Path to locales
@@ -678,16 +679,16 @@ SIMPLIFY_LANGUAGES = True
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # List of quality checks
-# CHECK_LIST = (
+CHECK_LIST = (
 #     'weblate.checks.same.SameCheck',
-#     'weblate.checks.chars.BeginNewlineCheck',
-#     'weblate.checks.chars.EndNewlineCheck',
-#     'weblate.checks.chars.BeginSpaceCheck',
-#     'weblate.checks.chars.EndSpaceCheck',
-#     'weblate.checks.chars.EndStopCheck',
+     'weblate.checks.chars.BeginNewlineCheck',
+     'weblate.checks.chars.EndNewlineCheck',
+     'weblate.checks.chars.BeginSpaceCheck',
+     'weblate.checks.chars.EndSpaceCheck',
+     'weblate.checks.chars.EndStopCheck',
 #     'weblate.checks.chars.EndColonCheck',
-#     'weblate.checks.chars.EndQuestionCheck',
-#     'weblate.checks.chars.EndExclamationCheck',
+     'weblate.checks.chars.EndQuestionCheck',
+     'weblate.checks.chars.EndExclamationCheck',
 #     'weblate.checks.chars.EndEllipsisCheck',
 #     'weblate.checks.chars.EndSemicolonCheck',
 #     'weblate.checks.chars.MaxLengthCheck',
@@ -704,7 +705,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 #     'weblate.checks.angularjs.AngularJSInterpolationCheck',
 #     'weblate.checks.consistency.PluralsCheck',
 #     'weblate.checks.consistency.SamePluralsCheck',
-#     'weblate.checks.consistency.ConsistencyCheck',
+     'weblate.checks.consistency.ConsistencyCheck',
 #     'weblate.checks.consistency.TranslatedCheck',
 #     'weblate.checks.chars.NewlineCountingCheck',
 #     'weblate.checks.markup.BBCodeCheck',
@@ -718,7 +719,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 #     'weblate.checks.source.OptionalPluralCheck',
 #     'weblate.checks.source.EllipsisCheck',
 #     'weblate.checks.source.MultipleFailingCheck',
-# )
+)
 
 # List of automatic fixups
 # AUTOFIX_LIST = (
