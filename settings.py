@@ -869,7 +869,7 @@ if env('WEBLATE_PRODUCTION') is not False:
     Production environment settings
     '''
     DATABASES = {
-        'default': {
+        'mysql': {
             # Use 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
             'ENGINE': 'django.db.backends.mysql',
             # Database name or path to database file if using sqlite3.
@@ -892,7 +892,7 @@ if env('WEBLATE_PRODUCTION') is not False:
                 'charset': 'utf8mb4',
             },
         },
-        'postgresql': {
+        'default': {
             # Use 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
             'ENGINE': 'django.db.backends.postgresql',
             # Database name or path to database file if using sqlite3.
