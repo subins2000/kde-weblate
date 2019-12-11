@@ -49,7 +49,7 @@
 * Create a project : `kde`
 * Import each files as components from the [git repo](https://github.com/FOSSersVAST/kde-ml) :
   ```
-  weblate import_project kde 'https://github.com/FOSSersVAST/kde-ml.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^-]*)\.po"
+  weblate import_project kde 'https://github.com/FOSSersVAST/kde-ml.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^%]*)\.po"
   ```
 * Configure the project to have a SSH key for pushing to `git@github.com:FOSSersVAST/kde-ml.git`. Add the ssh key as a deploy key in GitHub repo.
 
