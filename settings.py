@@ -891,6 +891,20 @@ if env('WEBLATE_PRODUCTION') is not False:
                 # Set emoji capable charset for MySQL:
                 'charset': 'utf8mb4',
             },
+        },
+        'postgresql': {
+            # Use 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+            'ENGINE': 'django.db.backends.postgresql',
+            # Database name or path to database file if using sqlite3.
+            'NAME': env('DB_NAME'),
+            # Database user, not used with sqlite3.
+            'USER': env('DB_USERNAME'),
+            # Database password, not used with sqlite3.
+            'PASSWORD': env('DB_PASSWORD'),
+            # Set to empty string for localhost. Not used with sqlite3.
+            'HOST': env('DB_HOST'),
+            # Set to empty string for default. Not used with sqlite3.
+            'PORT': '',
         }
     }
 
