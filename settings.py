@@ -19,6 +19,7 @@
 #
 
 from __future__ import unicode_literals
+
 import platform
 import os
 from logging.handlers import SysLogHandler
@@ -135,7 +136,7 @@ SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = False
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
@@ -185,30 +186,29 @@ STATICFILES_FINDERS = (
 # You can generate it using examples/generate-secret-key
 SECRET_KEY = env('DJANGO_SECRET_KEY') # noqa
 
+_TEMPLATE_LOADERS = [
+    "django.template.loaders.filesystem.Loader",
+    "django.template.loaders.app_directories.Loader",
+]
+if not DEBUG:
+    _TEMPLATE_LOADERS = [("django.template.loaders.cached.Loader", _TEMPLATE_LOADERS)]
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'weblate', 'templates'),
-        ],
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.request',
-                'django.template.context_processors.csrf',
-                'django.contrib.messages.context_processors.messages',
-                'weblate.trans.context_processors.weblate_context',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "weblate", "templates")],
+        "OPTIONS": {
+            "context_processors": [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.request",
+                "django.template.context_processors.csrf",
+                "django.contrib.messages.context_processors.messages",
+                "weblate.trans.context_processors.weblate_context",
             ],
-            'loaders': [
-                ('django.template.loaders.cached.Loader', [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                ]),
-            ],
+            "loaders": _TEMPLATE_LOADERS,
         },
-    },
+    }
 ]
 
 
@@ -434,51 +434,41 @@ else:
 # See http://docs.djangoproject.com/en/stable/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
+    "version": 1,
+    "disable_existing_loggers": True,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {
+        "syslog": {"format": "weblate[%(process)d]: %(levelname)s %(message)s"},
+        "simple": {"format": "%(levelname)s %(message)s"},
+        "logfile": {"format": "%(asctime)s %(levelname)s %(message)s"},
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[%(server_time)s] %(message)s",
+        },
     },
-    'formatters': {
-        'syslog': {
-            'format': 'weblate[%(process)d]: %(levelname)s %(message)s'
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+            "include_html": True,
         },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
-        'logfile': {
-            'format': '%(asctime)s %(levelname)s %(message)s'
+        "django.server": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "django.server",
         },
-        'django.server': {
-            '()': 'django.utils.log.ServerFormatter',
-            'format': '[%(server_time)s] %(message)s',
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'django.server': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'django.server',
-        },
-        'syslog': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.SysLogHandler',
-            'formatter': 'syslog',
-            'address': '/dev/log',
-            'facility': SysLogHandler.LOG_LOCAL2,
+        "syslog": {
+            "level": "DEBUG",
+            "class": "logging.handlers.SysLogHandler",
+            "formatter": "syslog",
+            "address": "/dev/log",
+            "facility": SysLogHandler.LOG_LOCAL2,
         },
         # Logging to a file
         # 'logfile': {
@@ -490,42 +480,35 @@ LOGGING = {
         #     'formatter': 'logfile',
         # },
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins', DEFAULT_LOG],
-            'level': 'ERROR',
-            'propagate': True,
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins", DEFAULT_LOG],
+            "level": "ERROR",
+            "propagate": True,
         },
-        'django.server': {
-            'handlers': ['django.server'],
-            'level': 'INFO',
-            'propagate': False,
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
         },
         # Logging database queries
         # 'django.db.backends': {
         #     'handlers': [DEFAULT_LOG],
         #     'level': 'DEBUG',
         # },
-        'weblate': {
-            'handlers': [DEFAULT_LOG],
-            'level': 'DEBUG',
-        },
+        "weblate": {"handlers": [DEFAULT_LOG], "level": "DEBUG"},
         # Logging search operations
-        'weblate.search': {
-            'handlers': [DEFAULT_LOG],
-            'level': 'INFO',
-        },
+        "weblate.search": {"handlers": [DEFAULT_LOG], "level": "INFO"},
         # Logging VCS operations
-        'weblate.vcs': {
-            'handlers': [DEFAULT_LOG],
-            'level': 'WARNING',
+        "weblate.vcs": {"handlers": [DEFAULT_LOG], "level": "WARNING"},
+        # Python Social Auth
+        "social": {"handlers": [DEFAULT_LOG], "level": "DEBUG" if DEBUG else "WARNING"},
+        # Django Authentication Using LDAP
+        "django_auth_ldap": {
+            "level": "DEBUG" if DEBUG else "WARNING",
+            "handlers": [DEFAULT_LOG],
         },
-        # Python Social Auth logging
-        # 'social': {
-        #     'handlers': [DEFAULT_LOG],
-        #     'level': 'DEBUG',
-        # },
-    }
+    },
 }
 
 # Logging of management commands to console
@@ -858,11 +841,22 @@ CELERY_BEAT_SCHEDULE_FILENAME = os.path.join(
     DATA_DIR, 'celery', 'beat-schedule'
 )
 CELERY_TASK_ROUTES = {
-    'weblate.trans.search.*': {'queue': 'search'},
-    'weblate.trans.tasks.optimize_fulltext': {'queue': 'search'},
-    'weblate.trans.tasks.cleanup_fulltext': {'queue': 'search'},
-    'weblate.memory.tasks.*': {'queue': 'memory'},
+    "weblate.trans.search.*": {"queue": "search"},
+    "weblate.trans.tasks.optimize_fulltext": {"queue": "search"},
+    "weblate.trans.tasks.cleanup_fulltext": {"queue": "search"},
+    "weblate.trans.tasks.auto_translate": {"queue": "translate"},
+    "weblate.memory.tasks.*": {"queue": "memory"},
+    "weblate.accounts.tasks.notify_*": {"queue": "notify"},
+    "weblate.accounts.tasks.send_mails": {"queue": "notify"},
+    "weblate.memory.tasks.memory_backup": {"queue": "backup"},
+    "weblate.utils.tasks.settings_backup": {"queue": "backup"},
+    "weblate.utils.tasks.database_backup": {"queue": "backup"},
+    "weblate.wladmin.tasks.backup": {"queue": "backup"},
+    "weblate.wladmin.tasks.backup_service": {"queue": "backup"},
 }
+
+# Store sessions in cache
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 if env('WEBLATE_PRODUCTION') is not False:
     '''
@@ -924,14 +918,15 @@ if env('WEBLATE_PRODUCTION') is not False:
         # Recommended redis + hiredis:
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': 'redis://127.0.0.1:6379/0',
+            # 'LOCATION': 'redis://127.0.0.1:6379/0',
             # If redis is running on same host as Weblate, you might
             # want to use unix sockets instead:
-            # 'LOCATION': 'unix:///var/run/redis/redis.sock?db=0',
+            'LOCATION': 'unix:///var/run/redis/redis.sock?db=0',
             'OPTIONS': {
                 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
                 'PARSER_CLASS': 'redis.connection.HiredisParser',
-            }
+            },
+            "KEY_PREFIX": "weblate"
         },
         'avatar': {
             'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',

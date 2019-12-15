@@ -23,6 +23,7 @@
 * Install :
   ```
   sudo apt install libpq-dev # https://stackoverflow.com/a/12037133/1372424
+  sudo apt install libacl1-dev
   export PIPENV_VENV_IN_PROJECT=1
   pipenv install
   ```
