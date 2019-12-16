@@ -221,7 +221,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.email.EmailAuth',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.github.GitlabOAuth2',
+    'social_core.backends.gitlab.GitLabOAuth2',
     # 'social_core.backends.bitbucket.BitbucketOAuth',
     # 'social_core.backends.suse.OpenSUSEOpenId',
     # 'social_core.backends.ubuntu.UbuntuOpenId',
