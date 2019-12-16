@@ -221,6 +221,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.email.EmailAuth',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.github.GitlabOAuth2',
     # 'social_core.backends.bitbucket.BitbucketOAuth',
     # 'social_core.backends.suse.OpenSUSEOpenId',
     # 'social_core.backends.ubuntu.UbuntuOpenId',
@@ -249,6 +250,9 @@ SOCIAL_AUTH_FACEBOOK_API_VERSION = '3.1'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+SOCIAL_AUTH_GITLAB_KEY = env('SOCIAL_AUTH_GITLAB_KEY')
+SOCIAL_AUTH_GITLAB_SECRET = env('SOCIAL_AUTH_GITLAB_SECRET')
 
 # Social auth settings
 SOCIAL_AUTH_PIPELINE = (

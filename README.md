@@ -38,6 +38,7 @@
   sudo apt install redis-server
   .venv/lib/python3.6/site-packages/weblate/examples/celery start
   ```
+* Set domain in Django Admin -> Sites
 * You need to update Weblate's plural form to accomodate with scripty's choice because scripty will change it to `(n != 1)` back everytime and that's a waste of git & svn tracking space. [Relevant](https://github.com/WeblateOrg/weblate/commit/56ee242b2c73aa1b892693c44d05c715b51832dd#diff-f45fc79cca287d720000daa62524df92)
   ```
   mysql -u root -p
