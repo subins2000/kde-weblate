@@ -2,7 +2,7 @@
 
 ## Translation
 
-* Signup for an account
+* [Signup for an account](//kde.smc.org.in)
 * Choose a project and a component
 * Start translating
 
@@ -17,9 +17,71 @@
   shyam@example.com,subin@example.com
   ```
 
+## Workflow
+
+There are 3 repos :
+
+* KDE Upstream repo (SVN)
+* Intermediary repo (git) : [This repo](https://github.com/FOSSersVAST/kde-pos).
+* Weblate local repo (git) : Local copy of the intermediary repo
+
+We need to make the intermediary repo and then setup Weblate.
+
+Weblate will work with the intermediary repo, and we'll have to manually merge the intermediary repo with KDE upstream (not that much of difficulty).
+
 ## Setup
 
-* Clone repo
+### Intermediary repo
+
+We need to create a new git repo which will act as an intermediary between KDE upstream repo (SVN) and Weblate.
+
+Weblate will use this intermediary git repo for syncing.
+
+The intermediary repo after the setup will have this folder structure :
+
+* l10n-kf5
+  * ml
+    * applications
+    * kde-workspace
+    * ...
+* upstream
+  * l10n-kf5-trunk
+    * ml
+      * applications
+      * kde-workspace
+      * ...
+    * templates
+  * stable-kf5
+* README.md
+* ...
+
+Make the upstream directory structure :
+
+```
+mkdir upstream upstream/l10n-kf5-trunk
+cd upstream/l10n-kf5-trunk
+svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/ml/messages ml
+svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/templates/messages templates
+```
+
+Then, make the folder `l10n-kf5` in the root, and copy files from `upstream` folder with the exact sub-directory structure. For example, if you want to add Dolphin file manager (`dolphin.po`), then :
+
+```
+mkdir l10n-kf5 l10n-kf5/ml l10n-kf5/ml/applications
+cp "upstream/l10n-kf5-trunk/ml/applications/dolphin.po" "l10n-kf5/ml/applications/dolphin.po"
+```
+
+You may also make `upstream/stable-kf5` folder :
+
+```
+mkdir upstream/stable-kf5
+cd upstream/stable-kf5
+svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/ml/messages ml
+```
+
+### Weblate
+
+* Clone this repo
 * Install :
   ```
   sudo apt install libpq-dev # https://stackoverflow.com/a/12037133/1372424
@@ -27,8 +89,12 @@
   export PIPENV_VENV_IN_PROJECT=1
   pipenv install
   ```
-
-* Make `.env`
+* Make `.env` :
+  ```
+  cp .env.example .env
+  ```
+  Edit the new `.env` and set a [Django secret key](https://djecrety.ir/), database credentials and optional other fetures.
+* Get into the environment and let Weblate know the settings :
   ```
   pipenv shell
   ln -s $(realpath settings.py) .venv/lib/python3.6/site-packages/weblate/settings.py
@@ -39,23 +105,41 @@
   .venv/lib/python3.6/site-packages/weblate/examples/celery start
   ```
 * Set domain in Django Admin -> Sites
-* You need to update Weblate's plural form to accomodate with scripty's choice because scripty will change it to `(n != 1)` back everytime and that's a waste of git & svn tracking space. [Relevant](https://github.com/WeblateOrg/weblate/commit/56ee242b2c73aa1b892693c44d05c715b51832dd#diff-f45fc79cca287d720000daa62524df92)
+* You need to update Weblate's plural form to accomodate with scripty's choice because scripty will change it to `(n != 1)` back everytime and that's a waste of git & svn storage. [Relevant](https://github.com/WeblateOrg/weblate/commit/56ee242b2c73aa1b892693c44d05c715b51832dd#diff-f45fc79cca287d720000daa62524df92)
   ```
   mysql -u root -p
   USE dbname;
   UPDATE lang_plural SET equation='(n != 1)' WHERE equation='n != 1'
   ```
 
-### Importing components to Weblate
+#### Importing components to Weblate
 
-* Create a project : `kde`
-* Import each files as components from the [git repo](https://github.com/FOSSersVAST/kde-ml) :
-  ```
-  weblate import_project kde 'https://github.com/FOSSersVAST/kde-ml.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^%]*)\.po"
-  ```
-* Configure the project to have a SSH key for pushing to `git@github.com:FOSSersVAST/kde-ml.git`. Add the ssh key as a deploy key in GitHub repo.
+Each PO file will be a component in Weblate. These components will be under a common project named `kde`.
 
-### Social Auth
+* Create a project named `kde` using Weblate web interface
+* [Setup the intermediary repo](#intermediary-repo)
+* Configure the project to have a SSH key for pushing to the intermediary git repo. If it's a GitHub repo, you can add the ssh key as a deploy key in GitHub repo with write permission.
+* From the server console, tell Weblate to import from the intermediary repo to `kde` project :
+  ```
+  weblate import_project kde 'https://github.com/FOSSersVAST/kde-pos.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^%]*)\.po" 
+  ```
+* Set license of components :
+  ```
+  UPDATE trans_component SET license='Under the same license as the package', new_lang='none';
+  ```
+* We're gonna enable [suggestions voting](https://docs.weblate.org/en/latest/admin/translating.html#suggestion-voting). Set suggestions for all components & vote count to 3. Disable translation propagation (because it messess with `Your names` and `Your emails` strings)
+  ```
+  weblate shell -c 'from weblate.trans.models import Component; Component.objects.all().update(suggestion_voting=True, suggestion_autoaccept=3, allow_translation_propagation=False)'
+  ```
+* Then do
+  ```
+  weblate loadpo kde
+  ```
+* Make project suggestion-review based. Go to Weblate, project page -> Users :
+  * Project Access Control : Protected
+  * Enable Reviews : Yes
+
+#### Social Auth
 
 * [Follow this](https://docs.weblate.org/en/latest/admin/auth.html)
 * Get API key & Secret, store in `.env` :
@@ -64,124 +148,48 @@
   SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=''
   ```
 
-## Mirror git repo
+## Intermediary Repo
 
-These things should be used in the [mirror git repo](https://github.com/FOSSersVAST/kde-ml). The mirror gir repo has the structure :
+### Syncing With KDE Upstream
 
-* l10n-kf5
-  * ml
-    * applications
-    * kde-workspace
-    * ...
-  * templates
-    * applications
-    * kde-workspace
-    * ...
-* README.md
-* ...
+NOTE: Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `l10n-kf5` folder too.
 
-Here, the folder `applications`, `kde-workspace` are all actually SVN cloned folders :
+* In `upstream/l10n-kf5-trunk/ml`, do
+  ```
+  svn update
+  ```
+* Copy files from `upstream` folder to intermediary repo's `l10n-kf5`
+  ```bash
+  copy-from-upstream.sh
+  ```
+  The script will only `cp` files that exists both in `upstream/l10n-kf5-trunk` and `l10n-kf5` folders.
+* Commit & push
+  ```
+  git commit -a -m "Sync with KDE Upstream"
+  ```
+* Go to Weblate web interface -> Repository Maintenance. Click `Pull changes`, `commit` & `push` buttons, one after the other
+* Do a `git pull` in the intermediary repo
+* Run
+  ```bash
+  copy-to-upstream.sh
+  ```
+  This will copy new localized strings from the recently pushed Weblate changes to KDE upstream repo.
+* In `upstream/l10n-kf5-trunk/ml` folder, commit :
+  ```bash
+  svn commit -m 'Update malayalam'
+  ```
+  See [SVN tips](#svn-tips)
 
-```
-cd l10n-kf5/ml
-svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/ml/messages/applications applications
-cd l10n-kf5/templates
-svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/templates/messages/applications applications
-```
-
-So basically, we're tracking these SVN repo files in `git`. The `.svn` folders are ignored in `.gitignore`.
-
-### Updating to KDE Upstream
-
-We're gonna localize **only** the trunk branch in KDE upstream.
-
-* The `master` branch must be kept up-to-date with KDE upstream (trunk). **No merges from other git branches should be done here**.
-* Work should be done on `weblate` branch (trunk).
-
-To sync files with upstream :
-```
-export REPO_ROOT=$PWD
-export LANG_CODE='ml'
-
-for PACKAGE in $(ls $REPO_ROOT/l10n-kf5/templates); do
-  echo $PACKAGE
-  cd $REPO_ROOT/l10n-kf5/templates/$PACKAGE && svn revert . -R && svn update --accept theirs-full
-  cd $REPO_ROOT/l10n-kf5/$LANG_CODE/$PACKAGE && svn revert . -R && svn update --accept theirs-full
-done
-cd $REPO_ROOT
-```
-
-We're using `svn revert` to [make sure](https://stackoverflow.com/questions/840509/svn-update-is-not-updating) every file is same as upstream.
-
-Then commit,
-```
-git commit -a -m "Sync with KDE Upstream"
-```
+Steps till **Weblate pull changes** can be done periodically to keep Weblate POs up-to-date with upstream.
 
 Better add a [webhook in GitHub to Weblate](https://docs.weblate.org/en/latest/admin/continuous.html#automatically-receiving-changes-from-github) so that Weblate is known of the changes automatically. Do this with the `weblate` branch.
 
-Or go to Weblate admin, choose the project and do action "Update VCS repository".
+## SVN Tips
 
-* When `master` is synced to upstream, do :
-  ```
-  git checkout weblate
-  git merge --no-ff master # Sometimes you may need to git merge -X theirs master
-  git push origin weblate
-  ```
+If you see a `?` next to files when doing `svn status`, then those files are untracked. You can track them all with :
 
-This will trigger weblate to pull from mirror git repo if you have enabled webhook.
-
-### Pushing to KDE Upstream
-
-First, we need to committ Weblate changes to the Mirror git repo. Then we push from the git repo to SVN.
-
-* Go to Weblate admin webpage, select the project, **Pull changes**, then do action **Commit changes** and finally do a **Rebase**.
-* In the localization maintainer's cloned mirror git repo :
-  ```
-  git checkout weblate # Make sure branch is weblate
-  git pull
-  ```
-* Go to each folder and commit to SVN :
-  ```
-  cd l10n-kf5/ml/applications
-  svn status
-  # ? means file is new
-  # You may wanna add new files too (this is the equivalent of git add --all) :
-  svn status | grep '?' | sed 's/^.* /svn add /' | bash
-  svn commit -m 'Update Malayalam localizations'
-  ```
-* There might be some new changes in PO files that you had to manually make to complete the previous step. If so, commit those to git :
-  ```bash
-  git commit -a -m 'Manual changes for pushing to upstream'
-  ```
-  Since these changes will now be in KDE upstream, they will reflect on `master` when you sync later.
-* Do this process once in a week. (scripy runs on friday. So, better do it before).
-
-### Merging trunk & stable
-
-Work is done on trunk branch and similar localizations from it are merged to stable. There will be two folders, `l10n-kf5` for trunk branch of KDE Framework 5 and `stable-kf5` for the stable branch (which we will clone).
-
-* [Pull all changes to trunk](#committing-pootle-changes-to-mirror-git-repo)
-* In the mirror git repo, checkout a new branch for our temporary work (this branch will be deleted at the end) :
-  ```
-  git checkout -b stable
-  mkdir stable-kf5
-  ```
-* Clone the [KDE upstream](#committing-to-kde-upstream)'s stable branch :
-  ```
-  cd stable-kf5
-  svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/ml/messages ml
-  ```
-  The folder structure will be like :
-  ```
-  * l10n-kf5
-    * ml
-      * applications
-    * templates
-  * stable-kf5
-    * ml
-      * applications
-      * kde-workspace
-      * ...
-  ```
-* Run the `merge-to-stable.sh` script
+```
+# ? means file is new
+# You may wanna add new files too (this is the equivalent of git add --all) :
+svn status | grep '?' | sed 's/^.* /svn add /' | bash
+```
