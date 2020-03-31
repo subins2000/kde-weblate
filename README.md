@@ -154,7 +154,7 @@ Each PO file will be a component in Weblate. These components will be under a co
 
 NOTE: Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `l10n-kf5` folder too.
 
-* In `upstream/l10n-kf5-trunk/ml`, do
+* In intermediary repo's `upstream/l10n-kf5-trunk/ml`, do
   ```
   svn update
   ```
@@ -167,7 +167,9 @@ NOTE: Don't make any change directly in the intermediary repo's `upstream` folde
   ```
   git commit -a -m "Sync with KDE Upstream"
   ```
-* Go to Weblate web interface -> Repository Maintenance. Click `Pull changes`, `commit` & `push` buttons, one after the other
+* Go to Weblate web interface -> Repository Maintenance. Click `Pull changes`, `commit` & `push` buttons, one after the other.
+
+  If there's any merge conflict, fix it in the repo on server. The git folder on repo will be at `data/vcs/<name>`. After fixing it, do a `git pull` to make sure everything's alright. And repeat this step (do Pull changes on Webalte, commit & push).
 * Do a `git pull` in the intermediary repo
 * Run
   ```bash
