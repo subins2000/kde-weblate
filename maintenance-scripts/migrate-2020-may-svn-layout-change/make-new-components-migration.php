@@ -17,7 +17,7 @@ foreach ($csv as $item) {
 }
 
 $components = json_decode(file_get_contents($componentsListFile), true);
-$newComponents = $components;
+$newComponents = [];
 
 // File moving bash script
 $script = '';
@@ -30,9 +30,12 @@ foreach ($components as $key => $item) {
 
   $filemask = $item['filemask'];
 
-  $newComponents[$key]['name'] = $newComponentName;
-  $newComponents[$key]['slug'] = str_replace('/', '', $newComponentName); // no slashes allowed in slug
-  $newComponents[$key]['filemask'] = str_replace($componentName, $newComponentName, $filemask);
+  $newComponents[$key] = [
+    'id' => $item['id'],
+    'name' => $newComponentName,
+    'slug' => str_replace('/', '', $newComponentName), // no slashes allowed in slug
+    'filemask' => str_replace($componentName, $newComponentName, $filemask)
+  ];
 }
 
 print_r($newComponents);
