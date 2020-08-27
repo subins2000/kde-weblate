@@ -104,12 +104,15 @@ svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/ml/messages m
   sudo apt install redis-server
   .venv/lib/python3.6/site-packages/weblate/examples/celery start
   ```
+* Create admin user :
+  ```
+  weblate createsuperuser
+  ```
 * Set domain in Django Admin -> Sites
 * You need to update Weblate's plural form to accomodate with scripty's choice because scripty will change it to `(n != 1)` back everytime and that's a waste of git & svn storage. [Relevant](https://github.com/WeblateOrg/weblate/commit/56ee242b2c73aa1b892693c44d05c715b51832dd#diff-f45fc79cca287d720000daa62524df92)
   ```
-  mysql -u root -p
-  USE dbname;
-  UPDATE lang_plural SET equation='(n != 1)' WHERE equation='n != 1'
+  psql
+  UPDATE lang_plural SET formula='(n != 1)' WHERE formula='n != 1'
   ```
 
 #### Importing components to Weblate
@@ -166,6 +169,7 @@ NOTE: Don't make any change directly in the intermediary repo's `upstream` folde
 * Commit & push
   ```
   git commit -a -m "Sync with KDE Upstream"
+  git push
   ```
 * Go to Weblate web interface -> Repository Maintenance. Click `Pull changes`, `commit` & `push` buttons, one after the other.
 
