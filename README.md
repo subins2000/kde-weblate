@@ -41,13 +41,13 @@ The intermediary repo after the setup will have this folder structure :
 
 * l10n-kf5
   * ml
-    * applications
+    * dolphin
     * kde-workspace
     * ...
 * upstream
   * l10n-kf5-trunk
     * ml
-      * applications
+      * dolphin
       * kde-workspace
       * ...
     * templates
@@ -67,8 +67,8 @@ svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/templates/messages temp
 Then, make the folder `l10n-kf5` in the root, and copy files from `upstream` folder with the exact sub-directory structure. For example, if you want to add Dolphin file manager (`dolphin.po`), then :
 
 ```
-mkdir l10n-kf5 l10n-kf5/ml l10n-kf5/ml/applications
-cp "upstream/l10n-kf5-trunk/ml/applications/dolphin.po" "l10n-kf5/ml/applications/dolphin.po"
+mkdir l10n-kf5 l10n-kf5/ml l10n-kf5/ml/dolphin
+cp "upstream/l10n-kf5-trunk/ml/dolphin/dolphin.po" "l10n-kf5/ml/dolphin/dolphin.po"
 ```
 
 You may also make `upstream/stable-kf5` folder :
