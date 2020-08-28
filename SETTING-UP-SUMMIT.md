@@ -1,8 +1,4 @@
-svn up --depth=empty branches branches/stable branches/stable/l10n-kde4
-
 Decided to move the localization system to summit to make things more easier. By using summit, there will be only one repo to manage, and running summit scripts will 
-
-Steps done :
 
 # Initial doc reading
 
@@ -17,7 +13,7 @@ Summit repo example : https://websvn.kde.org/trunk/l10n-support/fr/summit
 - Setup `$KDEREPO` (the summit repo) :
 
 ```
-export KDEREPO=$(realpath .)`)
+export KDEREPO=$(realpath .)
 ```
 
 Then, make the repo :
@@ -25,9 +21,10 @@ Then, make the repo :
 ```
 cd $KDEREPO
 svn co --depth=empty svn+ssh://svn@svn.kde.org/home/kde .
-svn up --depth=empty branches branches/stable branches/stable/l10n-kf5
-svn up --depth=empty trunk trunk/l10n-support trunk/l10n-kf5
+svn up --depth=empty branches branches/stable branches/stable/l10n-kf5 branches/stable/l10n-kf5-plasma-lts
+svn up --depth=empty trunk trunk/l10n-support trunk/l10n-kf5 branches/stable/l10n-kf5-plasma-lts
 svn up branches/stable/l10n-kf5/{scripts,templates,ml}
+svn up branches/stable/l10n-kf5-plasma-lts/{scripts,templates,ml}
 svn up trunk/l10n-kf5/{scripts,templates,ml}
 svn up trunk/l10n-support/{scripts,templates,ml}
 git clone git@invent.kde.org:sdk/pology.git trunk/l10n-support/pology
@@ -67,7 +64,7 @@ Periodically do these :
 ```
 cd $KDEREPO
 svn up
-posummit scripts/messages.summit ml merge
+posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml merge
 svn commit $KDEREPO/trunk/l10n-support/ml
 ```
 
@@ -76,8 +73,8 @@ svn commit $KDEREPO/trunk/l10n-support/ml
 - To scatter the summit, i.e. fill out POs in stable and trunk branch from the summit POs, the coordinator periodically executes and commit :
 
 ```
-posummit scripts/messages.summit ml scatter
-svn commit $KDEREPO/branches/stable/l10n-kf5/ml $KDEREPO/trunk/l10n-kf5/ml
+posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml scatter
+svn commit $KDEREPO/trunk/l10n-support/ml $KDEREPO/branches/stable/ $KDEREPO/trunk/l10n-kf5/ml
 ```
 
 There is **no fixed schedule** for when merging and scattering should be done. Of course, it must necessarily be done before the next release is tagged, and in between it is useful to scatter for runtime testing, or to have translation statistics by branches on l10n.kde.org up to date.
