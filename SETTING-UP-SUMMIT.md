@@ -64,7 +64,7 @@ Periodically do these :
 ```
 cd $KDEREPO
 svn up
-posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit ml merge
+posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml merge
 svn commit $KDEREPO/trunk/l10n-support/ml
 ```
 
@@ -73,8 +73,8 @@ svn commit $KDEREPO/trunk/l10n-support/ml
 - To scatter the summit, i.e. fill out POs in stable and trunk branch from the summit POs, the coordinator periodically executes and commit :
 
 ```
-posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit ml scatter
-svn commit $KDEREPO/branches/stable/l10n-kf5/ml $KDEREPO/trunk/l10n-kf5/ml
+posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml scatter
+svn commit $KDEREPO/trunk/l10n-support/ml $KDEREPO/branches/stable/ $KDEREPO/trunk/l10n-kf5/ml
 ```
 
 There is **no fixed schedule** for when merging and scattering should be done. Of course, it must necessarily be done before the next release is tagged, and in between it is useful to scatter for runtime testing, or to have translation statistics by branches on l10n.kde.org up to date.

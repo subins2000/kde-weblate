@@ -141,6 +141,7 @@ Each PO file will be a component in Weblate. These components will be under a co
 * Make project suggestion-review based. Go to Weblate, project page -> Users :
   * Project Access Control : Protected
   * Enable Reviews : Yes
+  With this, you will have to specifically allow users to submit suggestions. Registered users can't submit suggestions by default. Special reviewer users can be assigned to accept suggestions. Or all users who can suggest can vote on it and get it accepted.
 
 #### Social Auth
 
@@ -157,6 +158,29 @@ Each PO file will be a component in Weblate. These components will be under a co
 
 NOTE: Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `l10n-kf5` folder too.
 
+* Go to Weblate web interface -> Repository Maintenance. Click `Commit` & `Push` buttons, one after the other.
+
+  If there's any merge conflict, fix it in the repo on server. The git folder on repo will be at `data/vcs/<name>`. After fixing it, do a `git pull` to make sure everything's alright. And repeat this step (do Pull changes on Webalte, commit & push).
+* Do a `git pull` in the intermediary repo
+* Run
+  ```bash
+  copy-to-upstream.sh
+  ```
+  This will copy new localized strings from the recently pushed Weblate changes to KDE upstream summit repo.
+* In `upstream/l10n-kf5-summit/ml` folder, commit :
+  ```bash
+  svn commit -m 'Updates from Weblate'
+  ```
+  See [SVN tips](#svn-tips)
+* In **maintainer's local summit setup**, do : ([More details here](https://github.com/subins2000/kde-weblate/blob/master/SETTING-UP-SUMMIT.md#summit-next-steps))
+  ```
+  cd $KDEREPO
+  svn update
+  posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml merge
+  posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml scatter
+
+  svn commit $KDEREPO/trunk/l10n-support/ml $KDEREPO/branches/stable/ $KDEREPO/trunk/l10n-kf5/ml -m 'Routine Merge & Scatter'
+  ```
 * In intermediary repo's `upstream/l10n-kf5-summit/ml`, do
   ```
   svn update
@@ -165,30 +189,19 @@ NOTE: Don't make any change directly in the intermediary repo's `upstream` folde
   ```bash
   copy-from-upstream.sh
   ```
-  The script will only `cp` files that exists both in `upstream/l10n-kf5-trunk` and `l10n-kf5` folders.
+  The script will only `cp` files that exists both in `upstream/l10n-kf5-summit` and `l10n-kf5` folders.
 * Commit & push
   ```
   git commit -a -m "Sync with KDE Upstream"
   git push
   ```
-* Go to Weblate web interface -> Repository Maintenance. Click `Pull changes`, `commit` & `push` buttons, one after the other.
-
-  If there's any merge conflict, fix it in the repo on server. The git folder on repo will be at `data/vcs/<name>`. After fixing it, do a `git pull` to make sure everything's alright. And repeat this step (do Pull changes on Webalte, commit & push).
-* Do a `git pull` in the intermediary repo
-* Run
-  ```bash
-  copy-to-upstream.sh
-  ```
-  This will copy new localized strings from the recently pushed Weblate changes to KDE upstream repo.
-* In `upstream/l10n-kf5-trunk/ml` folder, commit :
-  ```bash
-  svn commit -m 'Update malayalam'
-  ```
-  See [SVN tips](#svn-tips)
+* Go to Weblate web interface -> Repository Maintenance and Pull.
 
 Steps till **Weblate pull changes** can be done periodically to keep Weblate POs up-to-date with upstream.
 
 Better add a [webhook in GitHub to Weblate](https://docs.weblate.org/en/latest/admin/continuous.html#automatically-receiving-changes-from-github) so that Weblate is known of the changes automatically. Do this with the `weblate` branch.
+
+![Illutsration](https://raw.githubusercontent.com/subins2000/kde-weblate/master/sync-flow.svg)
 
 ## SVN Tips
 
