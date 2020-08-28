@@ -31,6 +31,10 @@ Weblate will work with the intermediary repo, and we'll have to manually merge t
 
 ## Setup
 
+If your language team is not using Summit, use it. [Instructions here](https://github.com/subins2000/kde-weblate/blob/master/SETTING-UP-SUMMIT.md).
+
+Using summit helps you to maintain only one branch for both trunk and stable.
+
 ### Intermediary repo
 
 We need to create a new git repo which will act as an intermediary between KDE upstream repo (SVN) and Weblate.
@@ -45,38 +49,29 @@ The intermediary repo after the setup will have this folder structure :
     * kde-workspace
     * ...
 * upstream
-  * l10n-kf5-trunk
+  * l10n-kf5-summit
     * ml
       * dolphin
       * kde-workspace
       * ...
     * templates
-  * stable-kf5
 * README.md
 * ...
 
 Make the upstream directory structure :
 
 ```
-mkdir upstream upstream/l10n-kf5-trunk
-cd upstream/l10n-kf5-trunk
-svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/ml/messages ml
-svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-kf5/templates/messages templates
+mkdir upstream upstream/l10n-kf5-summit
+cd upstream/l10n-kf5-summit
+svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-support/ml/summit/messages ml
+svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-support/templates/summit/messages templates
 ```
 
-Then, make the folder `l10n-kf5` in the root, and copy files from `upstream` folder with the exact sub-directory structure. For example, if you want to add Dolphin file manager (`dolphin.po`), then :
+Then, make the folder `l10n-kf5` in the root, and copy files from `upstream` folder with the exact sub-directory structure. For example, if you want to add Dolphin file manager (`dolphin`), then :
 
 ```
 mkdir l10n-kf5 l10n-kf5/ml l10n-kf5/ml/dolphin
-cp "upstream/l10n-kf5-trunk/ml/dolphin/dolphin.po" "l10n-kf5/ml/dolphin/dolphin.po"
-```
-
-You may also make `upstream/stable-kf5` folder :
-
-```
-mkdir upstream/stable-kf5
-cd upstream/stable-kf5
-svn co svn+ssh://svn@svn.kde.org/home/kde/branches/stable/l10n-kf5/ml/messages ml
+cp "upstream/l10n-kf5-summit/ml/dolphin/*" "l10n-kf5/ml/dolphin/"
 ```
 
 ### Weblate
@@ -128,11 +123,16 @@ Each PO file will be a component in Weblate. These components will be under a co
   ```
 * Set license of components :
   ```
+  psql
   UPDATE trans_component SET license='Under the same license as the package', new_lang='none';
   ```
 * We're gonna enable [suggestions voting](https://docs.weblate.org/en/latest/admin/translating.html#suggestion-voting). Set suggestions for all components & vote count to 3. Disable translation propagation (because it messess with `Your names` and `Your emails` strings)
   ```
   weblate shell -c 'from weblate.trans.models import Component; Component.objects.all().update(suggestion_voting=True, suggestion_autoaccept=3, allow_translation_propagation=False)'
+  ```
+* Restart Weblate
+  ```
+  .venv/lib/python3.7/site-packages/weblate/examples/celery restart
   ```
 * Then do
   ```
@@ -157,7 +157,7 @@ Each PO file will be a component in Weblate. These components will be under a co
 
 NOTE: Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `l10n-kf5` folder too.
 
-* In intermediary repo's `upstream/l10n-kf5-trunk/ml`, do
+* In intermediary repo's `upstream/l10n-kf5-summit/ml`, do
   ```
   svn update
   ```
