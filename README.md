@@ -156,22 +156,33 @@ Each PO file will be a component in Weblate. These components will be under a co
 
 ### Syncing With KDE Upstream
 
-NOTE: Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `l10n-kf5` folder too.
+This is done in 2 processes (see the diagram at the end) :
+
+1. "Weblate Sync Process"
+2. "Merge Process"
+
+Weblate Sync Process :
 
 * Go to Weblate web interface -> Repository Maintenance. Click `Commit` & `Push` buttons, one after the other.
 
   If there's any merge conflict, fix it in the repo on server. The git folder on repo will be at `data/vcs/<name>`. After fixing it, do a `git pull` to make sure everything's alright. And repeat this step (do Pull changes on Webalte, commit & push).
+
 * Do a `git pull` in the intermediary repo
+
 * Run
   ```bash
   copy-to-upstream.sh
   ```
   This will copy new localized strings from the recently pushed Weblate changes to KDE upstream summit repo. Note that Weblate PO files have line wrapping enabled, but summit POs does not.
+
 * In `upstream/l10n-kf5-summit/ml` folder, commit :
   ```bash
   svn commit -m 'Updates from Weblate'
   ```
   See [SVN tips](#svn-tips)
+
+Merge Process :
+
 * In **maintainer's local summit setup**, do : ([More details here](https://github.com/subins2000/kde-weblate/blob/master/SETTING-UP-SUMMIT.md#summit-next-steps))
   ```
   export KDEREPO=$(realpath .)
@@ -180,24 +191,32 @@ NOTE: Don't make any change directly in the intermediary repo's `upstream` folde
   svn update
   cd $KDEREPO/trunk/l10n-support
   posummit scripts/messages.summit ml merge
+
+  # Decide whether to scatter now or not. Scatter is usually done before a release
   posummit scripts/messages.summit ml scatter
 
   svn commit $KDEREPO/trunk/l10n-support/ml $KDEREPO/branches/stable/ $KDEREPO/trunk/l10n-kf5/ml -m 'Routine Merge & Scatter'
   ```
-* In intermediary repo's `upstream/l10n-kf5-summit/ml`, do
+
+* In **intermediary repo**, do
   ```
-  svn update
+  cd upstream/l10n-kf5-summit/templates && svn update && cd -
+
+  cd upstream/l10n-kf5-summit/ml && svn update
   ```
+
 * Merge strings from files in `upstream` folder to `l10n-kf5`
   ```bash
   copy-from-upstream.sh
   ```
   The script will only merge strings of files that exists in `upstream/l10n-kf5-summit` and `l10n-kf5` folder. Note that Weblate PO files have line wrapping enabled, but summit POs does not.
+
 * Commit & push
   ```
   git commit -a -m "Sync with KDE Upstream"
   git push
   ```
+
 * Go to Weblate web interface -> Repository Maintenance and Pull.
 
 Steps till **Weblate pull changes** can be done periodically to keep Weblate POs up-to-date with upstream.
@@ -205,6 +224,10 @@ Steps till **Weblate pull changes** can be done periodically to keep Weblate POs
 Better add a [webhook in GitHub to Weblate](https://docs.weblate.org/en/latest/admin/continuous.html#automatically-receiving-changes-from-github) so that Weblate is known of the changes automatically. Do this with the `weblate` branch.
 
 ![Illutsration](https://raw.githubusercontent.com/subins2000/kde-weblate/master/sync-flow.svg)
+
+## Notes
+
+* Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `l10n-kf5` folder too.
 
 ## SVN Tips
 
@@ -215,3 +238,11 @@ If you see a `?` next to files when doing `svn status`, then those files are unt
 # You may wanna add new files too (this is the equivalent of git add --all) :
 svn status | grep '?' | sed 's/^.* /svn add /' | bash
 ```
+
+To revert local changes (`git checkout`) :
+
+```
+svn revert --recursive path
+```
+
+[git vs svn commands table](https://backlog.com/git-tutorial/reference/commands/)

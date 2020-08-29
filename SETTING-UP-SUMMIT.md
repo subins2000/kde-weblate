@@ -31,6 +31,13 @@ git clone git@invent.kde.org:sdk/pology.git trunk/l10n-support/pology
 cd trunk/l10n-support/pology && git pull && cd -
 ```
 
+- Ignore pology folder (this is equivalent of gitignore) :
+
+```
+cd $KDEREPO/trunk/l10n-support
+svn propset svn:ignore pology .
+```
+
 - Set PATH :
 
 ```
