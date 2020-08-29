@@ -64,7 +64,8 @@ Periodically do these :
 ```
 cd $KDEREPO
 svn up
-posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml merge
+cd $KDEREPO/trunk/l10n-support
+posummit scripts/messages.summit ml merge
 svn commit $KDEREPO/trunk/l10n-support/ml
 ```
 

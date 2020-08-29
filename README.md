@@ -119,7 +119,7 @@ Each PO file will be a component in Weblate. These components will be under a co
 * Configure the project to have a SSH key for pushing to the intermediary git repo. If it's a GitHub repo, you can add the ssh key as a deploy key in GitHub repo with write permission.
 * From the server console, tell Weblate to import from the intermediary repo to `kde` project :
   ```
-  weblate import_project kde 'https://github.com/FOSSersVAST/kde-pos.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^%]*)\.po" 
+  weblate import_project kde 'git@github.com:FOSSersVAST/kde-pos.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^%]*)\.po"
   ```
 * Set license of components :
   ```
@@ -166,7 +166,7 @@ NOTE: Don't make any change directly in the intermediary repo's `upstream` folde
   ```bash
   copy-to-upstream.sh
   ```
-  This will copy new localized strings from the recently pushed Weblate changes to KDE upstream summit repo.
+  This will copy new localized strings from the recently pushed Weblate changes to KDE upstream summit repo. Note that Weblate PO files have line wrapping enabled, but summit POs does not.
 * In `upstream/l10n-kf5-summit/ml` folder, commit :
   ```bash
   svn commit -m 'Updates from Weblate'
@@ -174,10 +174,13 @@ NOTE: Don't make any change directly in the intermediary repo's `upstream` folde
   See [SVN tips](#svn-tips)
 * In **maintainer's local summit setup**, do : ([More details here](https://github.com/subins2000/kde-weblate/blob/master/SETTING-UP-SUMMIT.md#summit-next-steps))
   ```
+  export KDEREPO=$(realpath .)
+  export PATH=$KDEREPO/trunk/l10n-support/pology/bin:$PATH
   cd $KDEREPO
   svn update
-  posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml merge
-  posummit $KDEREPO/trunk/l10n-support/scripts/messages.summit $KDEREPO/trunk/l10n-support/ml scatter
+  cd $KDEREPO/trunk/l10n-support
+  posummit scripts/messages.summit ml merge
+  posummit scripts/messages.summit ml scatter
 
   svn commit $KDEREPO/trunk/l10n-support/ml $KDEREPO/branches/stable/ $KDEREPO/trunk/l10n-kf5/ml -m 'Routine Merge & Scatter'
   ```
@@ -185,11 +188,11 @@ NOTE: Don't make any change directly in the intermediary repo's `upstream` folde
   ```
   svn update
   ```
-* Copy files from `upstream` folder to intermediary repo's `l10n-kf5`
+* Merge strings from files in `upstream` folder to `l10n-kf5`
   ```bash
   copy-from-upstream.sh
   ```
-  The script will only `cp` files that exists both in `upstream/l10n-kf5-summit` and `l10n-kf5` folders.
+  The script will only merge strings of files that exists in `upstream/l10n-kf5-summit` and `l10n-kf5` folder. Note that Weblate PO files have line wrapping enabled, but summit POs does not.
 * Commit & push
   ```
   git commit -a -m "Sync with KDE Upstream"
