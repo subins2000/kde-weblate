@@ -46,7 +46,7 @@ export PATH=$KDEREPO/trunk/l10n-support/pology/bin:$PATH
 
 - Intialize summit
 
-You may want to edit `scripts/messages.summit` to configure which branches to use in summit (I avoided plasma5lts & kde4)
+You may want to edit `scripts/messages.summit` to configure which branches to use in summit (I avoided plasma5lts & kde4). Further customizations can be made with an [extra file](https://techbase.kde.org/Localization/Workflows/PO_Summit#Summit_Customization).
 
 ```
 cd "$KDEREPO/trunk/l10n-support"
