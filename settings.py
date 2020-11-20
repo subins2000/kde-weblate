@@ -35,7 +35,8 @@ env = environ.Env(
 # Django settings for Weblate project.
 #
 
-DEBUG = True
+# smc-custom-setting
+DEBUG = False
 
 # smc-custom-setting
 ADMINS = (
@@ -188,6 +189,7 @@ STATICFILES_FINDERS = (
     "compressor.finders.CompressorFinder",
 )
 
+# smc-custom-setting
 # Make this unique, and don't share it with anybody.
 # You can generate it using weblate/examples/generate-secret-key
 SECRET_KEY = env('DJANGO_SECRET_KEY')  # smc-custom-setting
@@ -201,6 +203,7 @@ if not DEBUG:
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "weblate", "templates")], # smc-custom-setting
         "OPTIONS": {
             "context_processors": [
                 "django.contrib.auth.context_processors.auth",
