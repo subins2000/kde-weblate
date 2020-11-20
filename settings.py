@@ -599,8 +599,9 @@ MT_SAP_USE_MT = True
 # Title of site to use
 SITE_TITLE = "Weblate"
 
+# smc-custom-setting
 # Site domain
-SITE_DOMAIN = ""
+SITE_DOMAIN = "kde.smc.org.in"
 
 # smc-custom-setting
 # Whether site uses https
