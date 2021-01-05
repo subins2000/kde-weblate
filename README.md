@@ -43,13 +43,13 @@ Weblate will use this intermediary git repo for syncing.
 
 The intermediary repo after the setup will have this folder structure :
 
-* l10n-kf5
+* pos
   * ml
     * dolphin
     * kde-workspace
     * ...
 * upstream
-  * l10n-kf5-summit
+  * summit
     * ml
       * dolphin
       * kde-workspace
@@ -61,17 +61,35 @@ The intermediary repo after the setup will have this folder structure :
 Make the upstream directory structure :
 
 ```
-mkdir upstream upstream/l10n-kf5-summit
-cd upstream/l10n-kf5-summit
+mkdir upstream upstream/summit
+cd upstream/summit
 svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-support/ml/summit/messages ml
 svn co svn+ssh://svn@svn.kde.org/home/kde/trunk/l10n-support/templates/summit/messages templates
 ```
 
-Then, make the folder `l10n-kf5` in the root, and copy files from `upstream` folder with the exact sub-directory structure. For example, if you want to add Dolphin file manager (`dolphin`), then :
+Then, make the folder `pos` in the root, and copy files from `upstream/summit` folder with the exact sub-directory structure. For example, if you want to add Dolphin file manager (`dolphin`), then :
 
 ```
-mkdir l10n-kf5 l10n-kf5/ml l10n-kf5/ml/dolphin
-cp "upstream/l10n-kf5-summit/ml/dolphin/*" "l10n-kf5/ml/dolphin/"
+mkdir pos pos/ml pos/ml/dolphin
+cp "upstream/summit/ml/dolphin/*" "pos/ml/dolphin/"
+```
+
+#### Adding a new component
+
+Copy file from upstream to corresponding one in `pos` folder.
+
+Then import from git to weblate (the command in the [Importing components to Weblate section](#importing-components-to-weblate)) :
+
+```
+weblate import_project ...
+```
+
+#### Searching for strings
+
+To search for a particular string, do this in upstream :
+
+```
+grep -rnw '.' --include="*.po" -e '"Open Path"'
 ```
 
 ### Weblate
@@ -119,7 +137,7 @@ Each PO file will be a component in Weblate. These components will be under a co
 * Configure the project to have a SSH key for pushing to the intermediary git repo. If it's a GitHub repo, you can add the ssh key as a deploy key in GitHub repo with write permission.
 * From the server console, tell Weblate to import from the intermediary repo to `kde` project :
   ```
-  weblate import_project kde 'git@github.com:FOSSersVAST/kde-pos.git' master "l10n-kf5/(?P<language>[^/]*)/(?P<component>[^%]*)\.po"
+  weblate import_project kde 'git@github.com:FOSSersVAST/kde-pos.git' master "pos/(?P<language>[^/]*)/(?P<component>[^%]*)\.po"
   ```
 * Set license of components :
   ```
@@ -175,7 +193,7 @@ Weblate Sync Process :
   ```
   This will copy new localized strings from the recently pushed Weblate changes to KDE upstream summit repo. Note that Weblate PO files have line wrapping enabled, but summit POs does not.
 
-* In `upstream/l10n-kf5-summit/ml` folder, commit :
+* In `upstream/summit/ml` folder, commit :
   ```bash
   svn commit -m 'Updates from Weblate'
   ```
@@ -200,16 +218,16 @@ Merge Process :
 
 * In **intermediary repo**, do
   ```
-  cd upstream/l10n-kf5-summit/templates && svn update && cd -
+  cd upstream/summit/templates && svn update && cd -
 
-  cd upstream/l10n-kf5-summit/ml && svn update
+  cd upstream/summit/ml && svn update
   ```
 
-* Merge strings from files in `upstream` folder to `l10n-kf5`
+* Merge strings from files in `upstream/summit` folder to `pos`
   ```bash
   copy-from-upstream.sh
   ```
-  The script will only merge strings of files that exists in `upstream/l10n-kf5-summit` and `l10n-kf5` folder. Note that Weblate PO files have line wrapping enabled, but summit POs does not.
+  The script will only merge strings of files that exists in `upstream/summit` and `pos` folder. Note that Weblate PO files have line wrapping enabled, but summit POs does not.
 
 * Commit & push
   ```
@@ -227,7 +245,7 @@ Better add a [webhook in GitHub to Weblate](https://docs.weblate.org/en/latest/a
 
 ## Notes
 
-* Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `l10n-kf5` folder too.
+* Don't make any change directly in the intermediary repo's `upstream` folder. If doing so, make sure to update the PO file in the `pos` folder too.
 
 ## SVN Tips
 
