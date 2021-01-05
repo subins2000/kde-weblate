@@ -216,7 +216,7 @@ Merge Process :
   svn commit $KDEREPO/trunk/l10n-support/ml $KDEREPO/branches/stable/ $KDEREPO/trunk/l10n-kf5/ml -m 'Routine Merge & Scatter'
   ```
 
-* In **intermediary repo**, do
+* In **intermediary repo**, do (this only need to be done if `posummit merge` was done in the previous step.)
   ```
   cd upstream/summit/templates && svn update && cd -
 
