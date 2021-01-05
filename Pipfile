@@ -6,7 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-weblate = "*"
+python-environ = "*"
+weblate = "4.4"
 psycopg2-binary = "*"
 
 [requires]

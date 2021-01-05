@@ -377,6 +377,7 @@ INSTALLED_APPS = [
     "weblate.addons",
     "weblate.auth",
     "weblate.checks",
+    "weblate.configuration",
     "weblate.formats",
     "weblate.glossary",
     "weblate.machinery",
