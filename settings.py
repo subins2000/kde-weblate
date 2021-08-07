@@ -627,7 +627,7 @@ SITE_DOMAIN = "kde.smc.org.in"
 
 # smc-custom-setting
 # Whether site uses https
-ENABLE_HTTPS = False
+ENABLE_HTTPS = True
 
 # Use HTTPS when creating redirect URLs for social authentication, see
 # documentation for more details:
