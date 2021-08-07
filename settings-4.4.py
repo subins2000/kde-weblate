@@ -156,9 +156,6 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-# Type of automatic primary key, introduced in Django 3.2
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
 # URL prefix to use, please see documentation for more details
 URL_PREFIX = ""
 
@@ -350,14 +347,6 @@ AUTH_PASSWORD_VALIDATORS = [
     # },
 ]
 
-# Password hashing (prefer Argon)
-PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.Argon2PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
-    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
-]
-
 # Allow new user registrations
 REGISTRATION_OPEN = True
 
@@ -378,7 +367,6 @@ MIDDLEWARE = [
     "weblate.accounts.middleware.RequireLoginMiddleware",
     "weblate.api.middleware.ThrottlingMiddleware",
     "weblate.middleware.SecurityMiddleware",
-    "weblate.wladmin.middleware.ManageMiddleware",
 ]
 
 ROOT_URLCONF = "weblate.urls"
@@ -393,7 +381,6 @@ INSTALLED_APPS = [
     "weblate.formats",
     "weblate.glossary",
     "weblate.machinery",
-    "weblate.metrics",
     "weblate.trans",
     "weblate.lang",
     "weblate_language_data",
@@ -442,7 +429,7 @@ if platform.system() != "Windows":
         handler = SysLogHandler(address="/dev/log", facility=SysLogHandler.LOG_LOCAL2)
         handler.close()
         HAVE_SYSLOG = True
-    except OSError:
+    except IOError:
         HAVE_SYSLOG = False
 
 if DEBUG or not HAVE_SYSLOG:
@@ -553,7 +540,6 @@ MT_SERVICES = (
     #     "weblate.machinery.yandex.YandexTranslation",
     #     "weblate.machinery.saptranslationhub.SAPTranslationHub",
     #     "weblate.machinery.youdao.YoudaoTranslation",
-    #     "weblate.machinery.libretranslate.LibreTranslateTranslation"
     "weblate.machinery.weblatetm.WeblateTranslation",
     "weblate.memory.machine.WeblateMemory",
 )
@@ -614,10 +600,6 @@ MT_SAP_USERNAME = None
 MT_SAP_PASSWORD = None
 MT_SAP_USE_MT = True
 
-# LibreTranslate
-MT_LIBRETRANSLATE_API_URL = None
-MT_LIBRETRANSLATE_KEY = None
-
 # Title of site to use
 SITE_TITLE = "Weblate"
 
@@ -627,7 +609,7 @@ SITE_DOMAIN = "kde.smc.org.in"
 
 # smc-custom-setting
 # Whether site uses https
-ENABLE_HTTPS = False
+ENABLE_HTTPS = True
 
 # Use HTTPS when creating redirect URLs for social authentication, see
 # documentation for more details:
@@ -653,7 +635,6 @@ SECURE_REDIRECT_EXEMPT = (r"healthz/$",)  # Allowing HTTP access to health check
 # Session cookie age (in seconds)
 SESSION_COOKIE_AGE = 1000
 SESSION_COOKIE_AGE_AUTHENTICATED = 1209600
-SESSION_COOKIE_SAMESITE = "Lax"
 # Increase allowed upload size
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000
 
@@ -661,7 +642,6 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000
 LANGUAGE_COOKIE_SECURE = SESSION_COOKIE_SECURE
 LANGUAGE_COOKIE_HTTPONLY = SESSION_COOKIE_HTTPONLY
 LANGUAGE_COOKIE_AGE = SESSION_COOKIE_AGE_AUTHENTICATED * 10
-LANGUAGE_COOKIE_SAMESITE = SESSION_COOKIE_SAMESITE
 
 # Some security headers
 SECURE_BROWSER_XSS_FILTER = True
@@ -737,9 +717,6 @@ CHECK_LIST = (
 #     "weblate.checks.format.CFormatCheck",
 #     "weblate.checks.format.PerlFormatCheck",
 #     "weblate.checks.format.JavaScriptFormatCheck",
-#     "weblate.checks.format.LuaFormatCheck",
-#     "weblate.checks.format.ObjectPascalFormatCheck",
-#     "weblate.checks.format.SchemeFormatCheck",
 #     "weblate.checks.format.CSharpFormatCheck",
 #     "weblate.checks.format.JavaFormatCheck",
 #     "weblate.checks.format.JavaMessageFormatCheck",
@@ -775,7 +752,6 @@ CHECK_LIST = (
 #     "weblate.checks.source.MultipleFailingCheck",
 #     "weblate.checks.source.LongUntranslatedCheck",
 #     "weblate.checks.format.MultipleUnnamedFormatsCheck",
-#     "weblate.checks.glossary.GlossaryCheck",
 )
 
 # List of automatic fixups
@@ -810,9 +786,6 @@ CHECK_LIST = (
 #     "weblate.addons.resx.ResxUpdateAddon",
 #     "weblate.addons.yaml.YAMLCustomizeAddon",
 #     "weblate.addons.cdn.CDNJSAddon",
-#     "weblate.addons.cleanup.RemoveBlankAddon",
-#     "weblate.addons.consistency.LangaugeConsistencyAddon",
-#     "weblate.addons.discovery.DiscoveryAddon",
 #     "weblate.addons.autotranslate.AutoTranslateAddon",
 # )
 
@@ -826,7 +799,7 @@ DEFAULT_FROM_EMAIL = "chathan" + "@kde.smc.org.in"
 
 # smc-custom-setting
 # List of URLs your site is supposed to serve
-ALLOWED_HOSTS = ['51.15.143.73', 'kde.smc.org.in', 'kde.subinsb.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['51.15.143.73', 'kde.smc.org.in', 'localhost', '127.0.0.1']
 
 # Configuration for caching
 CACHES = {
@@ -932,7 +905,7 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 200000
 CELERY_BEAT_SCHEDULE_FILENAME = os.path.join(DATA_DIR, "celery", "beat-schedule")
 CELERY_TASK_ROUTES = {
-    "weblate.trans.tasks.auto_translate*": {"queue": "translate"},
+    "weblate.trans.tasks.auto_translate": {"queue": "translate"},
     "weblate.accounts.tasks.notify_*": {"queue": "notify"},
     "weblate.accounts.tasks.send_mails": {"queue": "notify"},
     "weblate.utils.tasks.settings_backup": {"queue": "backup"},
@@ -956,7 +929,6 @@ MATOMO_SITE_ID = None
 MATOMO_URL = None
 GOOGLE_ANALYTICS_ID = None
 SENTRY_DSN = None
-SENTRY_ENVIRONMENT = SITE_DOMAIN
 AKISMET_API_KEY = None
 
 # smc-custom-setting

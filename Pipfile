@@ -7,8 +7,8 @@ verify_ssl = true
 
 [packages]
 python-environ = "*"
-weblate = "4.4"
+weblate = "4.7"
 psycopg2-binary = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"
