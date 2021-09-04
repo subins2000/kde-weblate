@@ -130,39 +130,49 @@ grep -rnw '.' --include="*.po" -e '"Open Path"'
 
 #### Importing components to Weblate
 
-Each PO file will be a component in Weblate. These components will be under a common project named `kde`.
+Each PO file will be a component in Weblate. These components will be under a project in Webalte. `dolphin`, `discover`, `plasma-workspace` will each have their own project.
 
-* Create a project named `kde` using Weblate web interface
+For example, let's take 'dolphin' :
+
+* Create a project named `dolphin` using Weblate web interface
 * [Setup the intermediary repo](#intermediary-repo)
 * Configure the project to have a SSH key for pushing to the intermediary git repo. If it's a GitHub repo, you can add the ssh key as a deploy key in GitHub repo with write permission.
-* From the server console, tell Weblate to import from the intermediary repo to `kde` project :
+* From the server console, tell Weblate to import from the intermediary repo to `dolphin` project :
   ```
-  weblate import_project kde 'git@github.com:FOSSersVAST/kde-pos.git' master "pos/(?P<language>[^/]*)/(?P<component>[^%]*)\.po"
+  weblate import_project dolphin 'git@github.com:FOSSersVAST/kde-pos.git' master "pos/(?P<language>[^/]*)/dolphin/(?P<component>[^%]*)\.po"
   ```
-* Set license of components :
+* Set license of components & no new languages :
   ```
   psql
   UPDATE trans_component SET license='Under the same license as the package', new_lang='none';
   ```
-* We're gonna enable [suggestions voting](https://docs.weblate.org/en/latest/admin/translating.html#suggestion-voting). Set suggestions for all components & vote count to 3. Disable translation propagation (because it messess with `Your names` and `Your emails` strings)
+* We're gonna enable
+  1. [Suggestions voting](https://docs.weblate.org/en/latest/admin/translating.html#suggestion-voting): Set suggestions for all components & vote count to 3. Users who can suggest can vote on it and get it accepted when vote reaches threshold.
+  2. Disable translation propagation (because it messess with `Your names` and `Your emails` strings)
   ```
   weblate shell -c 'from weblate.trans.models import Component; Component.objects.all().update(suggestion_voting=True, suggestion_autoaccept=3, allow_translation_propagation=False)'
   ```
 * Restart Weblate
   ```
-  .venv/lib/python3.7/site-packages/weblate/examples/celery restart
+  .venv/lib/python3.8/site-packages/weblate/examples/celery restart
   ```
 * Then do
   ```
-  weblate loadpo kde
+  weblate loadpo dolphin
   ```
+
+Optional :
+
+* [Enable Reviews](https://docs.weblate.org/en/weblate-4.7.2/workflows.html#reviews): Special reviewer users can be assigned to accept suggestions and mark strings reviewed. This setting is **per project** available in Settings -> Workflow.
+
 * Make project suggestion-review based. Go to Weblate, project page -> Users :
   * Project Access Control : Protected
-  * Enable Reviews : Yes
-  With this, you will have to specifically allow users to submit suggestions. Registered users can't submit suggestions by default. Special reviewer users can be assigned to accept suggestions. Or all users who can suggest can vote on it and get it accepted.
+
+  With this, you will have to specifically allow users to submit suggestions. Registered users can't submit suggestions by default.
+
+Or you can just disable public registration and allow specific users only.
 
 #### Social Auth
-
 * [Follow this](https://docs.weblate.org/en/latest/admin/auth.html)
 * Get API key & Secret, store in `.env` :
   ```
